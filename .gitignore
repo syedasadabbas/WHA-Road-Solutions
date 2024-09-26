@@ -1,0 +1,15 @@
+.secret
+.env
+.env.*
+.venv/*
+*.pyc
+*.pyo
+*.bak
+docker/initdb/*
+.vscode/*
+.DS_Store
+node_modules/
+db.sqlite3
+media/
+myenv/
+geeks-3-2-0
