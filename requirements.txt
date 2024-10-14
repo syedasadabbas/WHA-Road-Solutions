@@ -1,3 +1,12 @@
 asgiref==3.8.1
 Django==5.1.1
+django-cors-headers==4.4.0
+django-filter==24.3
+djangorestframework==3.15.2
+future==1.0.0
+pillow==10.4.0
+Serializer==0.2.1
+serializers==0.2.4
+setuptools==75.1.0
+simplejson==3.19.3
 sqlparse==0.5.1
