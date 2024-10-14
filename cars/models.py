@@ -33,7 +33,7 @@ class Car(models.Model):
     built_date = models.DateField()
     car_make = models.CharField(max_length=50, default='Toyota')
     car_model = models.CharField(max_length=50, default='Echo')
-    car_type = models.CharField(max_length=20, choices=CAR_TYPES, default='Sedan')
+    car_type = models.CharField(max_length=50, choices=CAR_TYPES, default='Sedan')
     doors = models.PositiveIntegerField(default=4)
     transmission = models.CharField(max_length=20, choices=TRANSMISSION_TYPES, default='Automatic')
     capacity = models.DecimalField(max_digits=3, decimal_places=1, default=1.5)
@@ -42,7 +42,7 @@ class Car(models.Model):
     gears = models.PositiveIntegerField(default=4)
     odometer = models.PositiveIntegerField(default=234568)
     car_colour = models.CharField(max_length=30, default='White')
-    car_registration = models.CharField(max_length=15, unique=True)
+    car_registration = models.CharField(max_length=50, unique=True)
     vin = models.CharField(max_length=17, unique=True)
     car_picture = models.ImageField(upload_to='cars/images/', blank=True, null=True)
     car_price = models.DecimalField(max_digits=10, decimal_places=2, help_text="Car price in the local currency")
@@ -59,7 +59,7 @@ class CarImage(models.Model):
     image = models.ImageField(upload_to='cars/gallery/')  # Field for storing car gallery images
     
     def __str__(self):
-        return f"Image for {self.car.car_title}"
+        return f"{self.car.car_make} {self.car.car_model} ({self.car.car_registration})"
     
     class Meta:
         ordering = ['id']  # Ensure images are ordered by their id

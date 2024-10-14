@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car List with Images</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff4d30;
+            font-size: 36px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        /* Car List Cards */
+        .car-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .car-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 250px;
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .car-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .car-card a {
+            text-decoration: none;
+            color: #087384;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .car-card a:hover {
+            color: #087384;
+        }
+
+        .car-icon {
+            font-size: 50px;
+            color: #087384;
+        }
+
+        /* Button Styling */
+        .add-car-btn {
+            margin-top: 30px;
+            padding: 15px 30px;
+            background-color: #28a745;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-car-btn:hover {
+            background-color: #218838;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .car-card {
+                width: 90%;
+                margin: 15px 0;
+            }
+
+            .car-list {
+                flex-direction: column;
+            }
+
+            .container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Car List with Images</h1>
+
+    <!-- Car List -->
+    <div class="car-list">
+        {% for car in cars %}
+        <div class="car-card">
+            <i class="car-icon">&#128663;</i> <!-- Car emoji as an icon -->
+            <a href="{% url 'car_detail_and_image_crud' car.id %}">
+                {{ car.car_make }} {{ car.car_model }} - {{ car.car_registration }}
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Add New Car Button -->
+    <!-- <button class="add-car-btn">Add New Car</button> -->
+</div>
+
+</body>
+</html>

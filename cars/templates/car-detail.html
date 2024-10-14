@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Details and Images</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff4d30;
+            margin-bottom: 20px;
+            font-size: 32px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            color: #343a40;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        /* Card styling for images */
+        .car-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 250px;
+            margin: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-buttons {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
+
+        .card-buttons button {
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff4d30;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .card-buttons button:hover {
+            background-color: #ffa435;
+        }
+
+        /* Add Image Section */
+        .add-image-section {
+            margin-top: 30px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-image-section form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .add-image-section input[type="file"] {
+            margin: 10px 0;
+        }
+
+        .add-image-section button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .add-image-section button:hover {
+            background-color: #218838;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #17a2b8;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #138496;
+        }
+
+        /* Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #dc3545;
+        }
+
+        .modal-content button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-confirm {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Media Queries for Responsive Design */
+        @media (max-width: 768px) {
+            .card {
+                width: 90%;
+                margin: 15px 0;
+            }
+
+            .car-gallery {
+                flex-direction: column;
+            }
+
+            .add-image-section {
+                width: 90%;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>{{ car.car_make }} {{ car.car_model }} ({{ car.car_registration }})</h1>
+
+    <!-- Display Car Images -->
+    <h2>Car Image Gallery</h2>
+    <p>Select any image to edit or delete. Hover over a card to interact with it.</p>
+    <div class="car-gallery">
+        {% for image in images %}
+        <div class="card">
+            <img src="{{ image.image.url }}" alt="{{ car.car_make }} {{ car.car_model }}">
+            <div class="card-buttons">
+                <button onclick="openEditModal('{{ image.id }}')">Edit</button>
+                <button onclick="openDeleteModal('{{ image.id }}')">Delete</button>
+            </div>
+        </div>
+        {% empty %}
+        <p>No images available for this car.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Form to Add New Image -->
+    <h2>Add a New Image</h2>
+    <div class="add-image-section">
+        <p>Click "Choose File" to upload a new image for the car.</p>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Add Image</button>
+        </form>
+    </div>
+
+    <a href="{% url 'car_list_with_images' %}" class="back-btn">Go Back to Car List</a>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h3>Confirm Deletion</h3>
+        <p>Are you sure you want to delete this image? This action cannot be undone.</p>
+        <form id="deleteForm" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn-confirm">Yes, Delete</button>
+        </form>
+        <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+    </div>
+</div>
+
+<!-- Edit Image Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <h3>Edit Image</h3>
+        <p>Select a new image file to replace the existing one.</p>
+        <form id="editForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="image" required>
+            <button type="submit" class="btn-confirm">Update Image</button>
+        </form>
+        <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+    </div>
+</div>
+
+<script>
+    function openDeleteModal(imageId) {
+        const deleteForm = document.getElementById('deleteForm');
+        deleteForm.action = `/cars/image/delete/${imageId}/`;  // Set the action dynamically
+        document.getElementById('deleteModal').style.display = 'flex';  // Show the modal
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    function openEditModal(imageId) {
+        const editForm = document.getElementById('editForm');
+        editForm.action = `/cars/image/edit/${imageId}/`;  // Set the action dynamically
+        document.getElementById('editModal').style.display = 'flex';  // Show the modal
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

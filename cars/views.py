@@ -8,7 +8,12 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import os
 from datetime import datetime
+from django.shortcuts import render, get_object_or_404, redirect
+from .forms import CarImageForm
+from django.contrib.auth.decorators import login_required, user_passes_test
 
+def is_admin(user):
+    return user.is_staff
 
 class CarListView(generics.ListAPIView):
     queryset = Car.objects.all()
@@ -47,81 +52,85 @@ class CarListView(generics.ListAPIView):
 @csrf_exempt
 def reserve_car(request):
     if request.method == 'POST':
-        # Extract data from request.POST
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        phone = request.POST.get('phone')
-        dob = request.POST.get('dob')
-        age = request.POST.get('age')
-        street_address = request.POST.get('street_address')
-        suburb = request.POST.get('suburb')
-        state = request.POST.get('state')
-        postcode = request.POST.get('postcode')
-        licence = request.POST.get('licence')
-        licence_expiry = request.POST.get('licence_expiry')
-        option = request.POST.get('option')
+        try:
 
-        # Extract car details
-        car_type = request.POST.get('car_type')
-        car_price = request.POST.get('car_price')
-        car_make = request.POST.get('car_make')
-        car_color = request.POST.get('car_color')
-        car_registration = request.POST.get('car_registration')
-        car_vin = request.POST.get('car_vin')
-        car_picture = request.FILES.get('car_picture')  # Assuming the image is sent in the request
+            # Extract data from request.POST
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            phone = request.POST.get('phone')
+            dob = request.POST.get('dob')
+            age = request.POST.get('age')
+            street_address = request.POST.get('street_address')
+            suburb = request.POST.get('suburb')
+            state = request.POST.get('state')
+            postcode = request.POST.get('postcode')
+            licence = request.POST.get('licence')
+            licence_expiry = request.POST.get('licence_expiry')
+            option = request.POST.get('option')
 
-        # Handle file uploads for license images
-        licence_front_image = request.FILES.get('licence_front_image')
-        licence_back_image = request.FILES.get('licence_back_image')
+            # Extract car details
+            car_type = request.POST.get('car_type')
+            car_price = request.POST.get('car_price')
+            car_make = request.POST.get('car_make')
+            car_color = request.POST.get('car_color')
+            car_registration = request.POST.get('car_registration')
+            car_vin = request.POST.get('car_vin')
+            car_picture = request.FILES.get('car_picture')  # Assuming the image is sent in the request
 
-        # Define the upload directory
-        upload_dir = '/home/ghosta4/WHO-Road-Solutions/cars/images'  # Change to your desired path
-        os.makedirs(upload_dir, exist_ok=True)  # Create the directory if it doesn't exist
+            # Handle file uploads for license images
+            licence_front_image = request.FILES.get('licence_front_image')
+            licence_back_image = request.FILES.get('licence_back_image')
 
-        # Function to save uploaded files (license images)
-        def save_file(uploaded_file):
-            if uploaded_file:
-                file_path = os.path.join(upload_dir, uploaded_file.name)
-                with open(file_path, 'wb+') as destination:
-                    for chunk in uploaded_file.chunks():
-                        destination.write(chunk)
+            # Define the upload directory
+            upload_dir = '/home/ghosta4/WHO-Road-Solutions/cars/images'  # Change to your desired path
+            os.makedirs(upload_dir, exist_ok=True)  # Create the directory if it doesn't exist
 
-        # Save each uploaded file
-        save_file(licence_front_image)
-        save_file(licence_back_image)
+            # Function to save uploaded files (license images)
+            def save_file(uploaded_file):
+                if uploaded_file:
+                    file_path = os.path.join(upload_dir, uploaded_file.name)
+                    with open(file_path, 'wb+') as destination:
+                        for chunk in uploaded_file.chunks():
+                            destination.write(chunk)
 
-        # Create a new UserDetail object
-        user_detail = UserDetail(
-            first_name=first_name,
-            last_name=last_name,
-            phone=phone,
-            dob=dob,
-            age=age,
-            street_address=street_address,
-            suburb=suburb,
-            state=state,
-            postcode=postcode,
-            licence_number=licence,
-            licence_expiry_date=licence_expiry,
-            option=option,
-            car_type=car_type,
-            car_price=car_price,
-            car_make=car_make,
-            car_color=car_color,
-            car_registration=car_registration,
-            car_vin=car_vin,
-            car_picture=car_picture,
-            licence_front_image=licence_front_image,
-            licence_back_image=licence_back_image,
-        )
+            # Save each uploaded file
+            save_file(licence_front_image)
+            save_file(licence_back_image)
+        
+            # Create a new UserDetail object
+            user_detail = UserDetail(
+                first_name=first_name,
+                last_name=last_name,
+                phone=phone,
+                dob=dob,
+                age=age,
+                street_address=street_address,
+                suburb=suburb,
+                state=state,
+                postcode=postcode,
+                licence_number=licence,
+                licence_expiry_date=licence_expiry,
+                option=option,
+                car_type=car_type,
+                car_price=car_price,
+                car_make=car_make,
+                car_color=car_color,
+                car_registration=car_registration,
+                car_vin=car_vin,
+                car_picture=car_picture,
+                licence_front_image=licence_front_image,
+                licence_back_image=licence_back_image,
+            )
 
-        # Save the user detail to the database
-        user_detail.save()
-
+            # Save the user detail to the database
+            user_detail.save()
+        except Exception as exc:
+            return JsonResponse({'status': 'error', 'message': exc}, status=505)
+        
         return JsonResponse({'status': 'success', 'message': 'Reservation received'}, status=200)
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
-
+   
 
 def car_images_view(request, car_name):
     try:
@@ -216,3 +225,42 @@ def reserve_appointment(request):
         return JsonResponse({'status': 'success', 'message': 'Reservation received'}, status=200)
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+@login_required
+@user_passes_test(is_admin)
+# View to list all cars with images
+def car_list_with_images(request):
+    cars = Car.objects.filter(images__isnull=False).distinct()  # Fetch only cars that have images
+    return render(request, 'car-list.html', {'cars': cars})
+
+@login_required
+@user_passes_test(is_admin)
+# View to show details and images of a specific car and allow CRUD operations
+def car_detail_and_image_crud(request, car_id):
+    car = get_object_or_404(Car, id=car_id)
+    images = car.images.all()  # Fetch all images for this car
+
+    if request.method == 'POST':
+        form = CarImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            car_image = form.save(commit=False)
+            car_image.car = car  # Associate the car with the image
+            car_image.save()
+            return redirect('car_detail_and_image_crud', car_id=car.id)
+    else:
+        form = CarImageForm()
+
+    return render(request, 'car-detail.html', {
+        'car': car,
+        'images': images,
+        'form': form
+    })
+
+@login_required
+@user_passes_test(is_admin)
+# View to delete a car image
+def delete_car_image(request, image_id):
+    image = get_object_or_404(CarImage, id=image_id)
+    car_id = image.car.id
+    image.delete()
+    return redirect('car_detail_and_image_crud', car_id=car_id)
