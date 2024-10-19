@@ -22,10 +22,13 @@ from cars.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/cars/', CarListView.as_view(), name='car-list'),  # API to list cars with filters
+    path('api/cars/', CarListView.as_view(), name='cars'),  # API to list cars with filters
     path('api/reserve/', reserve_car, name='reserve_car'),
     path('api/appointment/', reserve_appointment, name='reserve_appointment'),
     path('api/car-images/<str:car_name>/', car_images_view, name='car-images'),
+    path('cars/', car_list_with_images, name='car_list_with_images'),
+    path('cars/<int:car_id>/', car_detail_and_image_crud, name='car_detail_and_image_crud'),
+    path('cars/image/delete/<int:image_id>/', delete_car_image, name='delete_car_image'),
 ]
 
 if settings.DEBUG:
