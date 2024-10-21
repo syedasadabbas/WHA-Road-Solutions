@@ -20,6 +20,10 @@ from django.conf.urls.static import static
 from django.urls import path
 from cars.views import *
 
+admin.site.site_header = 'WHA Administration'                    # default: "Django Administration"
+admin.site.index_title = 'WHA Road Solutions'                 # default: "Site administration"
+admin.site.site_title = 'WHA Site Admin Panel' # default: "Django site admin"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/cars/', CarListView.as_view(), name='cars'),  # API to list cars with filters
